@@ -14,6 +14,7 @@ class Photo: NSObject {
     var likes: String?
     var imageURL: String?
     var urls: [String : String]?
+    var title: String?
     
     var user: User = User()
 }

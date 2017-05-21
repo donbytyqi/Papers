@@ -7,13 +7,13 @@
 //
 
 import UIKit
+import Firebase
+import GoogleMobileAds
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
-//    let clientId = "8ee83ac1d45c0ce56dcbb34354714051b55762f9291ee986b8f589e050076943"
-//    let url = "https://api.unsplash.com/photos/?client_id=\(clientId)"
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         
@@ -25,6 +25,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let nav = UINavigationController(rootViewController: feedController)
         
         window?.rootViewController = nav
+        FIRApp.configure()
+        GADMobileAds.configure(withApplicationID: "ca-app-pub-4403822680611847~3454021211")
         
         
         return true

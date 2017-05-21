@@ -15,4 +15,7 @@ class User: NSObject {
     var image: String = ""
     var portfolio_url: String = ""
     
+    
+    var url: String = ""
+    
 }

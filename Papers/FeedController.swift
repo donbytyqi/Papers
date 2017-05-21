@@ -7,10 +7,12 @@
 //
 
 import UIKit
+import GoogleMobileAds
 
-class FeedController: UICollectionViewController, UICollectionViewDelegateFlowLayout, UISearchBarDelegate {
+class FeedController: UICollectionViewController, UICollectionViewDelegateFlowLayout, UISearchBarDelegate, GADBannerViewDelegate {
     
     private let cellId = "cellId"
+    private let headerId = "headerId"
     private var indexPaths = [IndexPath]()
     
     var currentURL = String()
@@ -22,12 +24,21 @@ class FeedController: UICollectionViewController, UICollectionViewDelegateFlowLa
     var moreButton: UIBarButtonItem?
     var searchButton: UIBarButtonItem?
     
+    private var unitId = "ca-app-pub-4403822680611847/6407487617"
+    
+    lazy var adBannerView: GADBannerView = {
+        let adBannerView = GADBannerView(adSize: kGADAdSizeSmartBannerPortrait)
+        adBannerView.adUnitID = "ca-app-pub-4403822680611847/6407487617"
+        adBannerView.delegate = self
+        adBannerView.rootViewController = self
+        
+        return adBannerView
+    }()
     
     func fetchPhotos() {
         PhotoAPIManager.shared.fetchPhotos(url: "", orderBy: currentOrder!, page: n, query: currentQuery) { (photos: [Photo]) in
             self.photos = photos
             self.collectionView?.reloadData()
-            print("Done")
         }
     }
     
@@ -54,9 +65,22 @@ class FeedController: UICollectionViewController, UICollectionViewDelegateFlowLa
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        adBannerView.load(GADRequest())
+        
         setupNavBarButtons()
         setupNavBarAndCollectionView()
         fetchPhotos()
+    }
+    
+    override func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+        let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: headerId, for: indexPath) as! CustomHeader
+        header.addSubview(adBannerView)
+        return header
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
+        return CGSize(width: view.frame.width, height: 50)
     }
     
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -66,15 +90,16 @@ class FeedController: UICollectionViewController, UICollectionViewDelegateFlowLa
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellId, for: indexPath) as! PhotoCell
         cell.photo = photos?[indexPath.item]
-        cell.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(showPhotoInfo)))
         return cell
     }
     
-    func showPhotoInfo(sender: UITapGestureRecognizer) {
-        guard let location = sender.location(in: collectionView) as CGPoint? else { return }
-        let indexPath = collectionView?.indexPathForItem(at: location)
+    override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        showPhotoInfo(atIndex: indexPath)
+    }
+    
+    func showPhotoInfo(atIndex: IndexPath) {
         let photoInfoController = PhotoInfoController()
-        photoInfoController.photo = photos?[(indexPath?.item)!]
+        photoInfoController.photo = photos?[atIndex.item]
         self.navigationController?.pushViewController(photoInfoController, animated: true)
     }
     
@@ -110,6 +135,7 @@ class FeedController: UICollectionViewController, UICollectionViewDelegateFlowLa
         currentQuery = ""
         navigationItem.title = currentOrder?.rawValue.capitalized
         navigationController?.navigationBar.isTranslucent = false
+        //navigationController?.hidesBarsOnSwipe = true
         
         //this two lines below remove the shadow ?? border under the navigation bar.
         navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
@@ -117,7 +143,10 @@ class FeedController: UICollectionViewController, UICollectionViewDelegateFlowLa
         
         collectionView?.backgroundColor = .white
         collectionView?.register(PhotoCell.self, forCellWithReuseIdentifier: cellId)
-        collectionView?.contentInset = UIEdgeInsetsMake(10, 0, 0, 0)
+        collectionView?.register(CustomHeader.self, forSupplementaryViewOfKind: UICollectionElementKindSectionHeader, withReuseIdentifier: headerId)
+        
+        let layout = collectionView?.collectionViewLayout as? UICollectionViewFlowLayout
+        layout?.sectionHeadersPinToVisibleBounds = true
     }
     
     func setupNavBarButtons() {
@@ -156,6 +185,12 @@ class FeedController: UICollectionViewController, UICollectionViewDelegateFlowLa
             self.collectionView?.scrollToItem(at: IndexPath(item: 0, section: 0), at: .top
                 , animated: true)
             self.fetchPhotos()
+        }))
+        actionSheet.addAction(UIAlertAction(title: "Settings", style: .default, handler: { (a) in
+            
+            let settingsController = SettingsController(style: .grouped)
+            self.navigationController?.pushViewController(settingsController, animated: true)
+            
         }))
         actionSheet.addAction(UIAlertAction(title: "Cancel", style: .destructive, handler: nil))
         self.present(actionSheet, animated: true, completion: nil)

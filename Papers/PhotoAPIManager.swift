@@ -12,6 +12,8 @@ class PhotoAPIManager: NSObject {
     
     static let shared = PhotoAPIManager()
     static let clientId = "8ee83ac1d45c0ce56dcbb34354714051b55762f9291ee986b8f589e050076943"
+    var moreUserInfo = String()
+    var photo = Photo()
     
     func fetchPhotos(url: String?, orderBy: OrderBy, page: Int, query: String? ,completion: @escaping ([Photo]) -> ()) {
         
@@ -27,13 +29,13 @@ class PhotoAPIManager: NSObject {
         }
         else {
             toFetchURL = URL(string: url!)
-            print("This as well?!")
         }
         UIApplication.shared.isNetworkActivityIndicatorVisible = true
         URLSession.shared.dataTask(with: toFetchURL!, completionHandler: {data, response, error in
             
             if error != nil {
-                self.showError(error: error as! String)
+                self.showError(error: (error?.localizedDescription)!)
+                print((error?.localizedDescription)!)
             }
             
             do {
@@ -49,33 +51,38 @@ class PhotoAPIManager: NSObject {
                         let userName = userDict["name"] as! String
                         let userImageUrl = profileImages["medium"] as! String
                         let likes = photoDict["likes"] as! Int
-                        let photo = Photo()
-                        photo.urls = photoUrl as? [String : String]
-                        photo.likes = "\(likes)" + " likes"
-                        photo.user.name = userName
-                        photo.user.image = userImageUrl
-                        print(userName)
-                        photos.append(photo)
+                        self.photo = Photo()
+                        self.photo.urls = photoUrl as? [String : String]
+                        self.photo.likes = "\(likes)" + " likes"
+                        self.photo.user.name = userName
+                        self.photo.user.image = userImageUrl
+                        self.moreUserInfo = photoDict["links"]?["self"] as! String
+                        photos.append(self.photo)
                     }
                 }
                 else {
                     let jsonData = try JSONSerialization.jsonObject(with: data!, options: .mutableContainers) as! [[String : AnyObject]]
                     
                     for i in 0..<jsonData.count {
+                        let p = Photo()
                         guard let photoDict = jsonData[i] as [String : AnyObject]? else { return }
                         guard let userDict = photoDict["user"] as! [String : AnyObject]? else { return }
                         guard let profileImages = userDict["profile_image"] as! [String : AnyObject]? else { return }
                         guard let photoUrl = photoDict["urls"] as? [String : AnyObject] else { return }
+                        guard let currentCo = photoDict["current_user_collections"] as? NSArray else { return }
+                        
+                        for j in 0..<currentCo.count {
+                            let dict = currentCo[j] as? [String : AnyObject]
+                            p.title = dict?["title"] as? String
+                        }
                         let userName = userDict["name"] as! String
                         let userImageUrl = profileImages["medium"] as! String
                         let likes = photoDict["likes"] as! Int
-                        let photo = Photo()
-                        photo.urls = photoUrl as? [String : String]
-                        photo.likes = "\(likes)" + " likes"
-                        photo.user.name = userName
-                        photo.user.image = userImageUrl
-                        print(userName)
-                        photos.append(photo)
+                        p.urls = photoUrl as? [String : String]
+                        p.likes = "\(likes)"
+                        p.user.name = userName
+                        p.user.image = userImageUrl
+                        photos.append(p)
                     }
                 }
                 

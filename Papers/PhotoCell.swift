@@ -23,7 +23,7 @@ class PhotoCell: BaseCollectionViewCell {
             }
             
             if let photoLikes = photo?.likes {
-                photoLikesLabel.text = photoLikes
+                photoLikesLabel.text = photoLikes + " likes"
             }
             
             if let photoImageUrl = photo?.urls?["regular"] {
@@ -33,8 +33,8 @@ class PhotoCell: BaseCollectionViewCell {
         }
     }
     
-    let userImageView: PhotoImage = {
-        let uiv = PhotoImage()
+    let userImageView: PhotoImageView = {
+        let uiv = PhotoImageView()
         uiv.translatesAutoresizingMaskIntoConstraints = false
         uiv.contentMode = .scaleAspectFill
         uiv.clipsToBounds = true
@@ -58,8 +58,8 @@ class PhotoCell: BaseCollectionViewCell {
         return pll
     }()
     
-    let photoImageView: PhotoImage = {
-        let piv = PhotoImage()
+    let photoImageView: PhotoImageView = {
+        let piv = PhotoImageView()
         piv.translatesAutoresizingMaskIntoConstraints = false
         piv.image = UIImage(named: "t")
         piv.contentMode = .scaleAspectFill

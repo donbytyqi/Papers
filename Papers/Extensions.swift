@@ -26,7 +26,7 @@ extension UIViewController {
 
 let imageCache = NSCache<AnyObject, AnyObject>()
 
-class PhotoImage: UIImageView {
+class PhotoImageView: UIImageView {
     
     var photoImageURL: String?
     
