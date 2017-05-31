@@ -8,11 +8,25 @@
 
 import UIKit
 
+protocol PhotoQualityDelegate {
+    func photo(withQuality: String)
+}
+
+
 class SettingsController: UITableViewController {
     
     static let cellId = "cellId"
     
     var c: UITableViewCell?
+    
+    var photoQualityDelegate: PhotoQualityDelegate?
+    
+    let switchQuality: UISwitch = {
+        let sq = UISwitch()
+        sq.translatesAutoresizingMaskIntoConstraints = false
+        sq.isOn = false
+        return sq
+    }()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -20,16 +34,30 @@ class SettingsController: UITableViewController {
         navigationItem.title = "Settings"
         
         c = UITableViewCell(style: .subtitle, reuseIdentifier: SettingsController.cellId)
-        c?.accessoryType = .disclosureIndicator
-        c?.textLabel?.text = "Remove Ads"
-        c?.detailTextLabel?.text = "$1.99"
+        c?.accessoryType = .none
+        c?.textLabel?.text = "Raw Photos"
+        c?.detailTextLabel?.text = "Enable this for raw high quality photos."
+        
+        c?.addSubview(switchQuality)
+        
+        switchQuality.centerYAnchor.constraint(equalTo: (c?.centerYAnchor)!).isActive = true
+        switchQuality.rightAnchor.constraint(equalTo: (c?.rightAnchor)!, constant: -10).isActive = true
+        
+        switchQuality.addTarget(self, action: #selector(changePhotoQuality), for: .valueChanged)
         
     }
     
-    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if indexPath.item == 0 {
-            buyProduct()
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(true)
+        if UserDefaults.standard.bool(forKey: "switch") == true {
+            switchQuality.isOn = true
         }
+        else {
+            switchQuality.isOn = false
+        }
+    }
+    
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -40,8 +68,27 @@ class SettingsController: UITableViewController {
         return c!
     }
     
-    func buyProduct() {
-        self.showAlert(title: "Oops", message: "Not implemented yet")
+    func changePhotoQuality(sender: UISwitch) {
+        
+        if sender.isOn == true {
+            
+            if photoQualityDelegate != nil {
+                photoQualityDelegate?.photo(withQuality: "raw")
+                UserDefaults.standard.set(true, forKey: "switch")
+                UserDefaults.standard.synchronize()
+                
+                
+            }
+        }
+        else {
+            if photoQualityDelegate != nil {
+                photoQualityDelegate?.photo(withQuality: "regular")
+                UserDefaults.standard.set(false, forKey: "switch")
+                UserDefaults.standard.synchronize()
+                
+                
+            }
+        }
     }
     
 }

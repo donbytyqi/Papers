@@ -10,6 +10,9 @@ import UIKit
 
 class PhotoCell: BaseCollectionViewCell {
     
+    
+    let feedController = FeedController()
+    
     var photo: Photo? {
         didSet {
             
@@ -26,7 +29,10 @@ class PhotoCell: BaseCollectionViewCell {
                 photoLikesLabel.text = photoLikes + " likes"
             }
             
-            if let photoImageUrl = photo?.urls?["regular"] {
+            //            let feedController = FeedController(collectionViewLayout: UICollectionViewFlowLayout())
+            
+            if let photoImageUrl = photo?.urls?[photoQuality] {
+                print("quality is equal to", photoQuality)
                 photoImageView.downloadImageFrom(urlString: photoImageUrl)
             }
             

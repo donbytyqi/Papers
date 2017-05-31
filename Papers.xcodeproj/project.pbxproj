@@ -20,6 +20,7 @@
 		5FE08FF31EBBA7F300A93BC1 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FE08FF21EBBA7F300A93BC1 /* User.swift */; };
 		5FE08FF51EBBA86100A93BC1 /* PhotoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FE08FF41EBBA86100A93BC1 /* PhotoCell.swift */; };
 		5FE08FF71EBBA87200A93BC1 /* BaseCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FE08FF61EBBA87200A93BC1 /* BaseCollectionViewCell.swift */; };
+		5FE28E1F1EDF2A60005D884B /* PhotoViewer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FE28E1E1EDF2A60005D884B /* PhotoViewer.swift */; };
 		999ED15BD2EA22D385A6BA54 /* Pods_Papers.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C48505D1C6FC29F226FA194C /* Pods_Papers.framework */; };
 /* End PBXBuildFile section */
 
@@ -39,6 +40,7 @@
 		5FE08FF21EBBA7F300A93BC1 /* User.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		5FE08FF41EBBA86100A93BC1 /* PhotoCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoCell.swift; sourceTree = "<group>"; };
 		5FE08FF61EBBA87200A93BC1 /* BaseCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BaseCollectionViewCell.swift; sourceTree = "<group>"; };
+		5FE28E1E1EDF2A60005D884B /* PhotoViewer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoViewer.swift; sourceTree = "<group>"; };
 		658FBC64694E10077AD5BB14 /* Pods-Papers.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Papers.release.xcconfig"; path = "Pods/Target Support Files/Pods-Papers/Pods-Papers.release.xcconfig"; sourceTree = "<group>"; };
 		6C5269E6194A64521E5DEF93 /* Pods-Papers.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Papers.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Papers/Pods-Papers.debug.xcconfig"; sourceTree = "<group>"; };
 		C48505D1C6FC29F226FA194C /* Pods_Papers.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Papers.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -111,6 +113,7 @@
 				5FE08FF41EBBA86100A93BC1 /* PhotoCell.swift */,
 				5FE08FF61EBBA87200A93BC1 /* BaseCollectionViewCell.swift */,
 				5F0349671EBF793D00BC0062 /* CustomHeader.swift */,
+				5FE28E1E1EDF2A60005D884B /* PhotoViewer.swift */,
 			);
 			name = Supporters;
 			sourceTree = "<group>";
@@ -275,6 +278,7 @@
 				5F66C56F1EBDE5D3005ECA37 /* PhotoInfoController.swift in Sources */,
 				5F0349621EBF70E300BC0062 /* SettingsController.swift in Sources */,
 				5F6B3B0B1EBBA21D000E712B /* FeedController.swift in Sources */,
+				5FE28E1F1EDF2A60005D884B /* PhotoViewer.swift in Sources */,
 				5F0349681EBF793D00BC0062 /* CustomHeader.swift in Sources */,
 				5F6B3B091EBBA21D000E712B /* AppDelegate.swift in Sources */,
 				5FE08FF71EBBA87200A93BC1 /* BaseCollectionViewCell.swift in Sources */,

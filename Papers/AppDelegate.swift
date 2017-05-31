@@ -26,7 +26,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         window?.rootViewController = nav
         FIRApp.configure()
-        GADMobileAds.configure(withApplicationID: "ca-app-pub-4403822680611847~3454021211")
         
         
         return true

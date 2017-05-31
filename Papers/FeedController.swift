@@ -9,7 +9,26 @@
 import UIKit
 import GoogleMobileAds
 
-class FeedController: UICollectionViewController, UICollectionViewDelegateFlowLayout, UISearchBarDelegate, GADBannerViewDelegate {
+var photoQuality = "regular"
+
+class FeedController: UICollectionViewController, UICollectionViewDelegateFlowLayout, UISearchBarDelegate, GADBannerViewDelegate, PhotoQualityDelegate {
+    
+    let ud = UserDefaults.standard
+    
+    func photo(withQuality: String) {
+        print("NEW QUALITY IS: ", withQuality)
+        photoQuality = withQuality
+        ud.set(photoQuality, forKey: "photoQ")
+        ud.synchronize()
+        PhotoAPIManager.shared.fetchPhotos(url: "", orderBy: currentOrder!, page: n, query: currentQuery, quality: photoQuality) { (photos: [Photo]) in
+            print("quality: ->", photoQuality)
+            self.photos = photos
+            self.collectionView?.scrollToItem(at: IndexPath(item: 0, section: 0), at: .top
+                , animated: true)
+            self.collectionView?.reloadData()
+        }
+    }
+    
     
     private let cellId = "cellId"
     private let headerId = "headerId"
@@ -20,23 +39,13 @@ class FeedController: UICollectionViewController, UICollectionViewDelegateFlowLa
     var photos: [Photo]?
     var n = 1
     var currentQuery = String()
+    var previousQuality = ""
     
     var moreButton: UIBarButtonItem?
     var searchButton: UIBarButtonItem?
     
-    private var unitId = "ca-app-pub-4403822680611847/6407487617"
-    
-    lazy var adBannerView: GADBannerView = {
-        let adBannerView = GADBannerView(adSize: kGADAdSizeSmartBannerPortrait)
-        adBannerView.adUnitID = "ca-app-pub-4403822680611847/6407487617"
-        adBannerView.delegate = self
-        adBannerView.rootViewController = self
-        
-        return adBannerView
-    }()
-    
     func fetchPhotos() {
-        PhotoAPIManager.shared.fetchPhotos(url: "", orderBy: currentOrder!, page: n, query: currentQuery) { (photos: [Photo]) in
+        PhotoAPIManager.shared.fetchPhotos(url: "", orderBy: currentOrder!, page: n, query: currentQuery, quality: photoQuality) { (photos: [Photo]) in
             self.photos = photos
             self.collectionView?.reloadData()
         }
@@ -46,7 +55,7 @@ class FeedController: UICollectionViewController, UICollectionViewDelegateFlowLa
         n += 1
         print(n)
         if currentQuery != "" {
-            PhotoAPIManager.shared.fetchPhotos(url: "s", orderBy: currentOrder!, page: n, query: currentQuery) { (photos: [Photo]) in
+            PhotoAPIManager.shared.fetchPhotos(url: "s", orderBy: currentOrder!, page: n, query: currentQuery, quality: photoQuality) { (photos: [Photo]) in
                 for photo in photos {
                     self.photos?.append(photo)
                 }
@@ -54,7 +63,7 @@ class FeedController: UICollectionViewController, UICollectionViewDelegateFlowLa
             }
         }
         else {
-            PhotoAPIManager.shared.fetchPhotos(url: "", orderBy: currentOrder!, page: n, query: currentQuery) { (photos: [Photo]) in
+            PhotoAPIManager.shared.fetchPhotos(url: "", orderBy: currentOrder!, page: n, query: currentQuery, quality: photoQuality) { (photos: [Photo]) in
                 for photo in photos {
                     self.photos?.append(photo)
                 }
@@ -66,21 +75,22 @@ class FeedController: UICollectionViewController, UICollectionViewDelegateFlowLa
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        adBannerView.load(GADRequest())
-        
         setupNavBarButtons()
         setupNavBarAndCollectionView()
         fetchPhotos()
+        
+        previousQuality = photoQuality
+        
     }
     
-    override func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
-        let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: headerId, for: indexPath) as! CustomHeader
-        header.addSubview(adBannerView)
-        return header
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
-        return CGSize(width: view.frame.width, height: 50)
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(true)
+        
+        if ud.string(forKey: "photoQ") != nil {
+            guard let photoQualityValue = ud.string(forKey: "photoQ") else { return }
+            photoQuality = photoQualityValue
+        }
+        
     }
     
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -99,7 +109,8 @@ class FeedController: UICollectionViewController, UICollectionViewDelegateFlowLa
     
     func showPhotoInfo(atIndex: IndexPath) {
         let photoInfoController = PhotoInfoController()
-        photoInfoController.photo = photos?[atIndex.item]
+//        photoInfoController.photo = photos?[atIndex.item]
+        photoInfoController.photoViewer.photo = photos?[atIndex.item]
         self.navigationController?.pushViewController(photoInfoController, animated: true)
     }
     
@@ -108,6 +119,7 @@ class FeedController: UICollectionViewController, UICollectionViewDelegateFlowLa
     }
     
     override func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        
         if indexPath.item == (photos?.count)! - 1 {
             fetchMorePhotos()
         }
@@ -123,6 +135,7 @@ class FeedController: UICollectionViewController, UICollectionViewDelegateFlowLa
                 })
             })
         }
+        
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
@@ -143,10 +156,6 @@ class FeedController: UICollectionViewController, UICollectionViewDelegateFlowLa
         
         collectionView?.backgroundColor = .white
         collectionView?.register(PhotoCell.self, forCellWithReuseIdentifier: cellId)
-        collectionView?.register(CustomHeader.self, forSupplementaryViewOfKind: UICollectionElementKindSectionHeader, withReuseIdentifier: headerId)
-        
-        let layout = collectionView?.collectionViewLayout as? UICollectionViewFlowLayout
-        layout?.sectionHeadersPinToVisibleBounds = true
     }
     
     func setupNavBarButtons() {
@@ -189,6 +198,7 @@ class FeedController: UICollectionViewController, UICollectionViewDelegateFlowLa
         actionSheet.addAction(UIAlertAction(title: "Settings", style: .default, handler: { (a) in
             
             let settingsController = SettingsController(style: .grouped)
+            settingsController.photoQualityDelegate = self
             self.navigationController?.pushViewController(settingsController, animated: true)
             
         }))
@@ -235,7 +245,7 @@ class FeedController: UICollectionViewController, UICollectionViewDelegateFlowLa
     
     func fetchPhotosByQuery(query: String) {
         n = 1
-        PhotoAPIManager.shared.fetchPhotos(url: "s", orderBy: currentOrder!, page: n, query: query) { (photos: [Photo]) in
+        PhotoAPIManager.shared.fetchPhotos(url: "s", orderBy: currentOrder!, page: n, query: query, quality: photoQuality) { (photos: [Photo]) in
             self.photos?.removeAll()
             self.photos = photos
             self.collectionView?.reloadData()

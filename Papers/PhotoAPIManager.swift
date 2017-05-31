@@ -15,7 +15,7 @@ class PhotoAPIManager: NSObject {
     var moreUserInfo = String()
     var photo = Photo()
     
-    func fetchPhotos(url: String?, orderBy: OrderBy, page: Int, query: String? ,completion: @escaping ([Photo]) -> ()) {
+    func fetchPhotos(url: String?, orderBy: OrderBy, page: Int, query: String? , quality: String, completion: @escaping ([Photo]) -> ()) {
         
         var toFetchURL: URL?
         var photos = [Photo]()
@@ -49,6 +49,7 @@ class PhotoAPIManager: NSObject {
                         guard let profileImages = userDict["profile_image"] as! [String : AnyObject]? else { return }
                         guard let photoUrl = photoDict["urls"] as? [String : AnyObject] else { return }
                         let userName = userDict["name"] as! String
+                        
                         let userImageUrl = profileImages["medium"] as! String
                         let likes = photoDict["likes"] as! Int
                         self.photo = Photo()
@@ -75,6 +76,7 @@ class PhotoAPIManager: NSObject {
                             let dict = currentCo[j] as? [String : AnyObject]
                             p.title = dict?["title"] as? String
                         }
+                        
                         let userName = userDict["name"] as! String
                         let userImageUrl = profileImages["medium"] as! String
                         let likes = photoDict["likes"] as! Int
