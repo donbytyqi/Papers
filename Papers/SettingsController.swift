@@ -68,7 +68,7 @@ class SettingsController: UITableViewController {
         return c!
     }
     
-    func changePhotoQuality(sender: UISwitch) {
+    @objc func changePhotoQuality(sender: UISwitch) {
         
         if sender.isOn == true {
             

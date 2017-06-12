@@ -11,7 +11,7 @@ import UIKit
 class PhotoAPIManager: NSObject {
     
     static let shared = PhotoAPIManager()
-    static let clientId = "8ee83ac1d45c0ce56dcbb34354714051b55762f9291ee986b8f589e050076943"
+    static let clientId = "your unsplash key here"
     var moreUserInfo = String()
     var photo = Photo()
     

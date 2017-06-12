@@ -36,7 +36,7 @@ class PhotoInfoController: UIViewController {
         //later...
     }
     
-    func didTapBackButton() {
+    @objc func didTapBackButton() {
         navigationController?.popViewController(animated: true)
     }
     

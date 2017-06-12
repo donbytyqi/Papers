@@ -169,7 +169,7 @@ class FeedController: UICollectionViewController, UICollectionViewDelegateFlowLa
         navigationItem.rightBarButtonItem = searchButton
     }
     
-    func handleMoreButton() {
+    @objc func handleMoreButton() {
         let actionSheet = UIAlertController(title: "Select an order to filter by", message: nil, preferredStyle: .actionSheet)
         actionSheet.addAction(UIAlertAction(title: "Popular", style: .default, handler: { (a) in
             self.currentOrder = .popular
@@ -206,7 +206,7 @@ class FeedController: UICollectionViewController, UICollectionViewDelegateFlowLa
         self.present(actionSheet, animated: true, completion: nil)
     }
     
-    func handleSearchButton() {
+    @objc func handleSearchButton() {
         createSearchBar()
     }
     
